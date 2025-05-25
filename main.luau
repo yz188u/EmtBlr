@@ -4,9 +4,21 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-local hrp = character:WaitForChild("HumanoidRootPart")
+local character = nil
+local humanoid = nil
+local hrp = nil
+
+local function updateCharacter()
+	character = player.Character or player.CharacterAdded:Wait()
+	humanoid = character:WaitForChild("Humanoid")
+	hrp = character:WaitForChild("HumanoidRootPart")
+end
+
+updateCharacter()
+player.CharacterAdded:Connect(function()
+	updateCharacter()
+end)
+
 local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
 
 -- EMOTE DATA
@@ -95,8 +107,8 @@ local function playEmote(name)
             if spawnedFloor and hrp then
                 spawnedFloor.Position = hrp.Position - Vector3.new(0, 3, 0)
             end
-            if spawnedArea and torso then
-                spawnedArea.Position = torso.Position
+            if spawnedArea and hrp then
+                spawnedArea.Position = hrp.Position
             end
         end)
 
@@ -110,7 +122,7 @@ local function playEmote(name)
 
         spawnedVFX = data.Model:Clone()
         spawnedVFX.Name = "CrabRaveVFX"
-        spawnedVFX.Parent = character
+        spawnedVFX.Parent = workspace
 
         local vfxRoot = spawnedVFX:FindFirstChild("HumanoidRootPart") or spawnedVFX.PrimaryPart
         if vfxRoot then
@@ -136,9 +148,9 @@ local function playEmote(name)
         track = humanoid:LoadAnimation(anim)
         track:Play()
 
-        spawnedVFX = data.Model:Clone()
-        spawnedVFX.Name = "ThePowerVFX"
-        spawnedVFX.Parent = character
+  spawnedVFX = data.Model:Clone()
+  spawnedVFX.Name = "ThePowerVFX"
+  spawnedVFX.Parent = workspace
 
         local function weldToCharacter(partName, targetName)
             local part = spawnedVFX:FindFirstChild(partName)
